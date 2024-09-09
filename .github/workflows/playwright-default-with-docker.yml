@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests in Docker containe
 on:
   pull_request:
     branches: [main, master]
@@ -9,10 +9,15 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.46.1-jammy
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Mark repository as safe
+        run: git config --global --add safe.directory '*'
 
       - uses: actions/setup-node@v4
         with:
@@ -22,9 +27,9 @@ jobs:
         run: npm ci
         working-directory: frontend
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-        working-directory: frontend
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
+      #   working-directory: frontend
 
       - name: Run changed Playwright tests
         run: npx playwright test --project=chromium --only-changed=origin/$GITHUB_BASE_REF
